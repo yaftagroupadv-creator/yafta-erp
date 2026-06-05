@@ -1,0 +1,30 @@
+workflows:
+  android-release:
+    name: Yafta ERP - Release Build
+    max_build_duration: 60
+    environment:
+      java: 17
+    scripts:
+      - name: Unzip project
+        script: |
+          cd $CM_BUILD_DIR
+          unzip -q yafta_project/*.zip -d extracted 2>/dev/null || true
+          if [ -d "extracted/yafta_project" ]; then
+            cp -r extracted/yafta_project/. .
+          fi
+          ls -la
+      - name: Build Release APK
+        script: |
+          cd $CM_BUILD_DIR
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+    artifacts:
+      - app/build/outputs/apk/release/*.apk
+      - app/build/outputs/bundle/release/*.aab
+    publishing:
+      email:
+        recipients:
+          - mahmoudhamdyyafta@gmail.com
+        notify:
+          success: true
+          failure: true
